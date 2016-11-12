@@ -115,7 +115,7 @@ public class MainMenu {
                 ,new Nook(RIGHT, TOP, "1/5", "1/5", app
                     ,new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(blue, DEFAULT), null)
                 )
-                ,new Button(LEFT, BOTTOM, "100p", "equal", new Rect(physicsButton, DEFAULT), null, () ->PhysicsScreen.open(app))
+                ,new Button(LEFT, BOTTOM, "100p", "equal", new Rect(physicsButton, DEFAULT), null, () ->{})
         ).configure();
 
     }
