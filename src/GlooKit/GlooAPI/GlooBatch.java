@@ -167,11 +167,11 @@ public abstract class GlooBatch {
     }
 
 
-    /** 
-     * This abstract render call must be implemented by each batch that a user constructs
-     * @see GlooKit.GlooFramework.DefaultBatch#render(Matrix)
-     * for an example
-     * */
+//    /**
+//     * This abstract render call must be implemented by each batch that a user constructs
+//     * @see GlooKit.GlooFramework.DefaultBatch#render(Matrix)
+//     * for an example
+//     * */
     public abstract void render(Matrix panel);
     
     /**

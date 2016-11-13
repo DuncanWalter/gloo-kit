@@ -36,10 +36,6 @@ public class Modal extends Nook{
     /** Overrides the default {@link KitBit#checkFocus(Input) checkFocus(Input)} method of {@code KitBit} to close this
      * {@code Modal} if a click occurs when this {@code Modal} is active and the click happens somewhere other than the
      * Modal.
-     *
-     * @param input an Input, which handles user input from keyboards, mice and controllers and is typically passed down
-     *              by the parent of this KitBit
-     * @return true if this KitBit is in focus
      * */
     public boolean checkFocus(Input input) {
         if(!isUnder(input.getCursorLocation())){

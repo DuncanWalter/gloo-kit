@@ -46,15 +46,6 @@ public class Nook extends KitBit {
      * {@link KitBit#drawFrame(float, float, float, float, float) drawFrame(float, float, float, float, float)}
      * method of {@code KitBit} to also call the {@link KitBit#drawChildren(float) drawChildren(float)} method of
      * {@code KitBit}, which ensures that {@code drawFrame()} is recursively called on the children of this {@code Nook}
-     *
-     * @param X float for the horizontal position of the bottom left corner of this Nook on the screen, measured in
-     *          pixels from the left side of the screen
-     * @param Y float for the vertical position of the bottom left corner of this Nook on the screen, measured in
-     *          pixels from the bottom of the screen
-     * @param W float for the width of this Nook on the screen, measured in pixels
-     * @param H float for the height of this Nook on the screen, measured in pixels
-     * @param Z float for the z-coordinate of this Nook which is actually ignored in favor of the z-coordinate of this
-     *          Nook
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
         super.drawFrame(X, Y, W, H, z);

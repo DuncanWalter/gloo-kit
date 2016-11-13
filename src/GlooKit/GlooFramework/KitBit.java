@@ -8,7 +8,7 @@ import GlooKit.GlooFramework.Components.*;
 import GlooKit.Utils.Vector;
 
 /**
- * {@code KitBits} are the building block of the Visual Gloo Framework, designed to mimic HTML elements in many ways.
+ * {@code KitBits} are the building blocks of the Visual Gloo Framework, designed to mimic HTML elements in many ways.
  * They are managed in a hierarchy of parents and children and are capable of multiple forms of responsive sizing.
  * {@code KitBits} are also made to be extendable; custom {@code KitBits} can serve as modules or perform complex tasks
  * while maintaining a uniform structure. A {@code KitBit} can have an x position, y position, width configuration,
@@ -999,9 +999,9 @@ public abstract class KitBit {
      *          pixels from the bottom of the screen
      * @param W float for the width of this KitBit on the screen, measured in pixels
      * @param H float for the height of this KitBit on the screen, measured in pixels
-     * @param Z float for the z-coordinate of this KitBit "on" the screen, ranging from -1 to +1, where +1 is closest to
-     *          the screen and -1 is furthest from the screen. Considering that the camera is orthogonal, this does not
-     *          change the width or height of this KitBit but merely the positioning of this element from front to back.
+     * @param Z float for the z-coordinate of this KitBit on the screen, ranging from -1 to +1, where +1 is closest to
+     *          the screen and -1 is furthest from the screen. This does not change the width or height of this KitBit
+     *          but determines whether this KitBit is drawn in front of or behind another KitBit.
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
 
