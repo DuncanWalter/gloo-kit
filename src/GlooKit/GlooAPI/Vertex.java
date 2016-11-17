@@ -15,10 +15,10 @@ package GlooKit.GlooAPI;
 
 public abstract class Vertex {
 
-
     private final float[] attributes;
 
-    public static final Integer SIZE = null;
+    public static final String[]  parameterNames   = null;
+    public static final Integer[] parameterLengths = null;
     // standard coordinates
     public Integer X(){return null;}
     public Integer Y(){return null;}
@@ -38,18 +38,22 @@ public abstract class Vertex {
     public Integer P(){return null;}
     public Integer Q(){return null;}
 
+    public abstract int size();
+    public abstract String[] getParameterNames();
+    public abstract int[]  getParameterLengths();
+
     public float[] attributes() {
         return attributes;
 
     }
 
     /** Basic Constructor*/
-    public Vertex(int length){
-        attributes = new float[length];
+    public Vertex(){
+        attributes = new float[this.size()];
 
     }
 
-    /** Default toString operator for a vertex that simply prints out the attributes as an n-tuple*/
+    /** Default toString operator for a vertex that prints out the attributes as an n-tuple*/
     public String toString() {
 
         String string = "<";
@@ -64,8 +68,6 @@ public abstract class Vertex {
         return string;
 
     }
-
-//    public abstract Vertex setXYZ(double X, double Y, double Z);
 
     public Vertex set(Integer attribute, float value){
         if(attribute != null){

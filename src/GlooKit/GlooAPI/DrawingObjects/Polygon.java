@@ -1,13 +1,14 @@
 package GlooKit.GlooAPI.DrawingObjects;
 
+import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.Vertex;
 import GlooKit.GlooFramework.GlooApplication;
 
 public class Polygon extends DrawingObject {
 
     /* Polygon's are 2D (convex!) objects that will be drawn on the screen. They are flat in the z-direction.*/
-    public Polygon(GlooApplication app, int batchHandle) {
-        super(app, batchHandle);
+    public Polygon(GlooBatch context) {
+        super(context);
 
     }
     public void addVertex(){

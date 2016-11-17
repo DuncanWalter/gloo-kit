@@ -21,8 +21,6 @@ public class RowSpan extends KitBit{
         //Collections.addAll(this.children, children);
     }
     public void drawFrame(float X, float Y, float W, float H, float Z){
-        super.drawFrame(X, Y, W, H, Z);
-
         // TODO hidden checks, clipping off-screen draws, fix n finding
 
         float spanPoints = calculateWidthSpanPoints(getChildren());
@@ -48,5 +46,7 @@ public class RowSpan extends KitBit{
 
             }
         }
+
+        super.drawFrame(X, Y, W, H, Z);
     }
 }

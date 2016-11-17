@@ -14,24 +14,21 @@ public abstract class DrawingObject {
     private final List<Vertex> vertices;
     private final List<Short> indices;
 
-    public DrawingObject(GlooApplication app, int batchHandle){
-        this.batch = app.getCore().getBatch(batchHandle);
+    public DrawingObject(GlooBatch context){
+        this.batch = context;
         vertices = new ArrayList<>();
         indices = new ArrayList<>();
     }
-
     public void apply(Consumer<Vertex> function){
         for(Vertex v : vertices){
             // TODO SUPER UNSAFE! IF THIS EVER BREAKS, ADD AN IF CHECK- THIS IS HERE TO TEST PROVABILITY
             function.accept(v);
         }
     }
-
     public void apply(int index, Consumer<Vertex> function){
         function.accept(vertex(index));
 
     }
-
     public List<Vertex> vertices(){
         return vertices;
 
@@ -48,15 +45,15 @@ public abstract class DrawingObject {
         return batch.createVertex();
 
     }
-
     public void draw(){
         batch.add(this);
 
     }
+    public void send(){
+        batch.render();
 
-//    public void exhumeVertex(double X, double Y, double Z, Vertex V, GlooSocket context){
-//        context.exhumeVertex(X, Y, Z, V);
-//    }
+    }
+
 //    public void shift(float X, float Y, float Z, GlooSocket context){
 //        for(VertexType v : vertices){
 //            context.shiftVertex(X, Y, Z, v);

@@ -24,8 +24,6 @@ public class ColSpan extends KitBit{
 
     }
     public void drawFrame(float X, float Y, float W, float H, float Z){
-        super.drawFrame(X, Y, W, H, Z);
-
         // TODO hidden checks, clipping off-screen draws, fix n finding
 
         float spanPoints = calculateHeightSpanPoints(getChildren());
@@ -51,5 +49,7 @@ public class ColSpan extends KitBit{
 
             }
         }
+
+        super.drawFrame(X, Y, W, H, Z);
     }
 }

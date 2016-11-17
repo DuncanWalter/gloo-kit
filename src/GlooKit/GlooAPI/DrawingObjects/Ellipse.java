@@ -1,6 +1,7 @@
 package GlooKit.GlooAPI.DrawingObjects;
 
 
+import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.Vertex;
 import GlooKit.GlooFramework.GlooApplication;
 
@@ -9,8 +10,8 @@ public class Ellipse extends Polygon {
     private int segments;
     private boolean centered;
 
-    public Ellipse(GlooApplication app, int batchHandle, int segments, boolean centered){
-        super(app, batchHandle);
+    public Ellipse(GlooBatch context, int segments, boolean centered){
+        super(context);
         load(segments);
         this.segments = segments;
         this.centered = centered;

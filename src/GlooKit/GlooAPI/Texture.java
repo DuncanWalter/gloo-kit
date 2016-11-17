@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import static GlooKit.GlooAPI.GlooCore.DEFAULT;
-
 /**
  * Texture work in tandem with TextureAtlases and can mostly be thought of as a ByteBuffer of pixels
  * Textures also know their width, height, and also possess a couple properties granted to them by their TextureAtlas
@@ -25,7 +23,7 @@ import static GlooKit.GlooAPI.GlooCore.DEFAULT;
  * Author: Eli Jergensen and Duncan Walter
  * Documenter: Eli Jergensen
  * */
-public class Texture implements Comparable<Texture> {
+public final class Texture implements Comparable<Texture> {
 
     // TODO addBatch access to batch owner, atlas owner, aspect ratio
 
@@ -80,8 +78,6 @@ public class Texture implements Comparable<Texture> {
     /**
      * Constructs a Texture of width and height that is a purely white, full opacity image
      * This is the Default Texture of the GlooCore
-     * The handle of this Texture is GlooCore.DEFAULT
-     * @see GlooCore#DEFAULT
      * A new TextureAtlas is initialized with only this texture in it
      *
      * @param app The GlooApplication of the TextureAtlas of this Texture
@@ -92,7 +88,7 @@ public class Texture implements Comparable<Texture> {
     protected Texture(GlooApplication app, int width, int height) {
 
         this.app = app;
-        this.handle = DEFAULT;
+        this.handle = 0;
 
         this.width = width;
         this.height = height;

@@ -28,13 +28,13 @@ public class TextBatch extends GlooBatch {
 
     // TODO target for simplification
     public TextBatch(GlooApplication app){
-        super(app, 1.00f, true, null);
+        super(app, null);
 
         fontFamilies = new ArrayList<>();
         handles = new HashMap<>();
 
         describeShaders("src/GlooKit/GlooShaders/", "quadVertex.glsl", "quadFragment.glsl", null);
-        describeVertices(new int[] {2, 4, 2}, "in_Position", "in_Color", "in_TextureCoord");
+//        describeVertices(new int[] {3, 4, 2}, "in_Position", "in_Color", "in_TextureCoord");
         projMatrixLocation = describeUniform("projectionMatrix");
 
     }
@@ -44,16 +44,16 @@ public class TextBatch extends GlooBatch {
 
     }
 
-    public void render(Matrix panel){
+    public void render(){
 //        GL11.glEnable(GL_MULTISAMPLE);
 //        // enable depth testing
         // enable depth testing
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
         // tell the shader to enable blending
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         // send the projection matrix
-        assignUniform(FLOAT_MAT4x4, projMatrixLocation, panel.toFloatBuffer());
+        assignUniform(FLOAT_MAT4x4, projMatrixLocation, app().getPanel().toFloatBuffer());
 
         super.render(GL11.GL_TRIANGLES);
     }

@@ -3,8 +3,10 @@ package GlooKit.GlooFramework;
 import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.GlooCore;
 import GlooKit.GlooAPI.Worker;
+import GlooKit.Utils.Matrix;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,13 +38,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * A GlooApplication also handles the game loop, running until the {@link GlooApplication#close() close()} method is
  * called. The game loop runs four main methods each frame:
  *     <p>
- *     First {@link GlooApplication#drawFrame() drawFrame()} handles the pre-rendering of all screen
+ *     First {@link GlooApplication#drawFrame() drawFrame()} handles the rendering of all screen
  *     elements by recursively calling
  *     {@link KitBit#drawFrame(float, float, float, float, float) drawFrame(float, float, float, float, float)} on each
- *     of the {@code KitBits} on the screen. {@code drawFrame()} also handles all of the rendering by instructing the
- *     {@link GlooCore GlooCore} to {@link GlooCore#renderFrame(int, int) renderFrame(int, int)}. This, in turn tells
- *     all {@link GlooBatch GlooBatches} to render all of their {@link GlooKit.GlooAPI.DrawingObjects.DrawingObject DrawingObjects}
- *     to the {@code RenderBuffer}. This does not actually draw the rendered frame to the screen.
+ *     of the {@code KitBits} on the screen.
  *     <p>
  *     {@link GlooApplication#calcFrame(double) calcFrame(double)} is the first half of the update loop, which
  *     processes changes due to user input. This happens by calling
@@ -111,8 +110,8 @@ public class GlooApplication extends KitBit {
 
 
     // glooKit Hardware
-    /** The {@code GlooCore} for this application that handles all render calls */
-    private GlooCore core;
+    /** A {@code Worker} thread pool of default size available for tasking for rendering and other tasks */
+    private Worker pool;
 
     /** The {@code Input} for this application that handles all mouse, keyboard, and controller inputs */
     private Input input;
@@ -126,6 +125,9 @@ public class GlooApplication extends KitBit {
 
     /** A single int within an int array corresponding to the height of the display panel (within the window), in pixels */
     private int[] h;
+
+    /** A {@code Matrix} which transforms pixel coordinates on the screen to OpenGL coordinates; used for rendering */
+    private Matrix panel;
 
 
     // KitBit pieces
@@ -182,6 +184,7 @@ public class GlooApplication extends KitBit {
         this.w = new int[1];
         this.h = new int[1];
         input = new Input(window);
+        pool = new Worker();
 
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
@@ -193,9 +196,6 @@ public class GlooApplication extends KitBit {
         GL.createCapabilities();
         // Sets up an error callback service
 //        GLFWErrorCallback.createPrint(System.err).set();
-
-        core = new GlooCore();
-        core.init(this);
 
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
@@ -330,23 +330,24 @@ public class GlooApplication extends KitBit {
     }
 
     /**
-     * Initiates the process of rendering to the screen.
+     * Initiates the process of rendering to the screen in each iteration of the game loop.
      * <p>
-     * First calls on the
-     * {@link Room#drawFrame(float, float, float, float, float) drawFrame(float, float, float, float, float)} method of
-     * {@code Room} to load the information necessary for rendering into arrays. This method recursively calls on all
-     * children to ensure that all {@code KitBits} prepare themselves for rendering.
-     * <p>
-     * Then calls on the
-     * {@link GlooCore#renderFrame(int, int) renderFrame(int, int)} method of {@code GlooCore} to actually render to the
-     * screen. This method delegates the task of rendering to various {@code GlooBatches}. Rendering actually happens
-     * not directly to the screen but instead to a {@code RenderBuffer}. This gets rendered to the screen during the
+     * Calls
+     * {@link Room#drawFrame(float, float, float, float, float) drawFrame(float, float, float, float, float)} method of the
+     * {@code Room} to draw itself to the following screen buffer. This method recursively calls on all
+     * children to ensure that all {@code KitBits} draw themselves similarly. This gets rendered to the screen during the
      * {@code glfwSwapBuffers(long)} call, which happens later in the game loop.
      * */
     private void drawFrame(){
         glfwGetFramebufferSize(window, w, h);
+
+        panel = new Matrix(4);
+        panel.set(0, 0, +2f/w[0]); //
+        panel.set(1, 1, +2f/h[0]); //
+        panel.set(0, 3, -1); //
+        panel.set(1, 3, -1); //
+
         room.drawFrame(0, 0, w[0], h[0], 0);
-        core.renderFrame(w[0], h[0]);
     }
 
     /**
@@ -358,22 +359,6 @@ public class GlooApplication extends KitBit {
      * */
     public GlooApplication getApp(){
         return this;
-    }
-
-    /** Gets the {@code GlooBatch} of the {@code GlooCore} of this application, given an integer handle.
-     *
-     * @param batchHandle int handle of the GlooBatch that was returned when the GlooBatch was constructed
-     * @return GlooBatch of this application matching the given handle */
-    public GlooBatch getBatch(int batchHandle){
-        return core.getBatch(batchHandle);
-    }
-
-    /** Gets the {@link GlooBatch GlooBatch} of the {@code GlooCore} of this application, given a name of the batch.
-     *
-     * @param batch String corresponding to the name of the GlooBatch
-     * @return GlooBatch of this application matching the given name */
-    public GlooBatch getBatch(String batch){
-        return core.getBatch(core.getHandle(batch));
     }
 
     /**
@@ -394,24 +379,14 @@ public class GlooApplication extends KitBit {
     }
 
     /**
-     * Gets the {@code GlooCore} of this {@code GlooApplication}, which is responsible for handling all of the rendering
-     * calls.
+     * Gets the {@link Worker Worker} thread pool of this {@code GlooApplication}. The {@code Worker} is used to greatly expedite the process of pre-rendering through the
+     * power of multithreading, and for any other time sensitive tasks. It can be used for both asynchronous and parallel tasks throughout the
+     * application.
      *
-     * @return the primary GlooCore of this GlooApplication
-     * */
-    public GlooCore getCore(){
-        return core;
-    }
-
-    /**
-     * Gets the {@link Worker WorkerPool} of this {@code GlooApplication}, which is the {@code ThreadPool} of the
-     * {@code GlooCore}. The {@code WorkerPool} is used to greatly expedite the process of pre-rendering through the
-     * power of multithreading!
-     *
-     * @return the {@code WorkerPool}({@code ThreadPool}) of this {@code GlooApplication} for use in multithreading
+     * @return the {@code Worker} thread pool of this {@code GlooApplication} for use in multithreading
      * */
     public Worker getPool(){
-        return core.getPool();
+        return pool;
     }
 
     /**
@@ -487,6 +462,8 @@ public class GlooApplication extends KitBit {
                     stepFrame(delta);
                 });
                 glfwSwapBuffers(window);
+                GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
                 pool.await(update);
 
                 fps += 1;
@@ -513,11 +490,25 @@ public class GlooApplication extends KitBit {
             // Free the window callbacks and destroy the window
             glfwFreeCallbacks(window);
             glfwDestroyWindow(window);
-            core.destroy();
+//            core.destroy();
             pool.destroy();
+            this.pool.destroy();
             complete = true;
         }
     }
+
+    /**
+     * Gets the current panel {@code Matrix} which converts from window coordinates to OpenGL coordinates. This is vital for
+     * rendering properly.
+     *
+     * @return The current panel {@code Matrix} which converts from window coordinates to OpenGL coordinates.
+     * */
+    public Matrix getPanel(){
+        return panel;
+
+    }
+
+
 
     /**
      * Spins off a new GlooApplication to run independently of a previously existing one in a new thread, given a name

@@ -62,14 +62,10 @@ public abstract class GlooBatch {
 //    public static final int FLOAT_MAT4 = FLOAT_MAT4x4;
 
     // the custom collection of drawing objects to be drawn
-    private GlooApplication application;
+    private final GlooApplication application;
     private final Batch batch;
 //    private int vertexSize;
-    final float precedent;
-    int handle;
     protected TextureAtlas atlas;
-    private final boolean monoThreaded;
-    private final GlooCore core;
 
     private int shaderProgram;
     private int VAOID;
@@ -81,12 +77,9 @@ public abstract class GlooBatch {
 
     public abstract Vertex createVertex();
 
-    public GlooBatch(GlooApplication app, float drawPrecedent, boolean monoThreaded, TextureAtlas atlas){
+    public GlooBatch(GlooApplication app, TextureAtlas atlas){
         batch = new Batch(app.getPool());
-        this.precedent = drawPrecedent;
         this.atlas = atlas == null ? new TextureAtlas(app) : atlas;
-        this.monoThreaded = monoThreaded;
-        this.core = app.getCore();
         application = app;
     }
 
@@ -112,13 +105,12 @@ public abstract class GlooBatch {
         System.out.println(path + fragmentShader);
         shaderProgram = createShaderProgram(loadVertexShader(path + vertexShader), loadFragmentShader(path + fragmentShader));
 
-    }
-    public void describeVertices(int[] parameterLengths, String... parameterNames){
+        Vertex v = createVertex();
 
-        if(parameterNames.length != parameterLengths.length){
+        if(v.getParameterNames().length != v.getParameterLengths().length){
             new Exception("ERROR: parameterLengths and parameterNames were of different sizes").printStackTrace();
         } else {
-            parameterCount = parameterNames.length;
+            parameterCount = v.getParameterNames().length;
         }
 
         VAOID = GL30.glGenVertexArrays();
@@ -128,17 +120,17 @@ public abstract class GlooBatch {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBOID);
 
         int length = 0;
-        for(int l : parameterLengths){
+        for(int l : v.getParameterLengths()){
             length += l;
         }
         int index = 0;
         int offset = 0;
-        for(String s : parameterNames){
+        for(String s : v.getParameterNames()){
 //            Setup the VBO with the corresponding attribute pointers
 //            attribute list #, pointSize of element, type of element, isNormalized?, stride (skipping stuff), run spot
             GL20.glBindAttribLocation(shaderProgram, index, s);
-            GL20.glVertexAttribPointer(index, parameterLengths[index], GL11.GL_FLOAT, false, length * 4, offset * 4);
-            offset += parameterLengths[index];
+            GL20.glVertexAttribPointer(index, v.getParameterLengths()[index], GL11.GL_FLOAT, false, length * 4, offset * 4);
+            offset += v.getParameterLengths()[index];
             index++;
         }
         vertexSize = offset;
@@ -152,6 +144,45 @@ public abstract class GlooBatch {
         indicesVBOID = GL15.glGenBuffers();
 
     }
+//    public void describeVertices(int[] parameterLengths, String... parameterNames){
+//
+//        if(parameterNames.length != parameterLengths.length){
+//            new Exception("ERROR: parameterLengths and parameterNames were of different sizes").printStackTrace();
+//        } else {
+//            parameterCount = parameterNames.length;
+//        }
+//
+//        VAOID = GL30.glGenVertexArrays();
+//        GL30.glBindVertexArray(VAOID);
+//        // Create and bind the default VAO's VBO
+//        VBOID = GL15.glGenBuffers();
+//        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBOID);
+//
+//        int length = 0;
+//        for(int l : parameterLengths){
+//            length += l;
+//        }
+//        int index = 0;
+//        int offset = 0;
+//        for(String s : parameterNames){
+////            Setup the VBO with the corresponding attribute pointers
+////            attribute list #, pointSize of element, type of element, isNormalized?, stride (skipping stuff), run spot
+//            GL20.glBindAttribLocation(shaderProgram, index, s);
+//            GL20.glVertexAttribPointer(index, parameterLengths[index], GL11.GL_FLOAT, false, length * 4, offset * 4);
+//            offset += parameterLengths[index];
+//            index++;
+//        }
+//        vertexSize = offset;
+//
+//
+//        // unbind the VBO
+//        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+//        // deselect the VAO
+//        GL30.glBindVertexArray(0);
+//        // Create and bind a VBO for the indices (this isn't attached to the VAO (for some reason))
+//        indicesVBOID = GL15.glGenBuffers();
+//
+//    }
     public int describeUniform(String uniform){
         return GL20.glGetUniformLocation(shaderProgram, uniform);
 
@@ -169,21 +200,23 @@ public abstract class GlooBatch {
 
     /** 
      * This abstract render call must be implemented by each batch that a user constructs
-     * @see GlooKit.GlooFramework.DefaultBatch#render(Matrix)
+     * @see GlooKit.GlooFramework.DefaultBatch#render()
      * for an example
      * */
-    public abstract void render(Matrix panel);
+    public abstract void render();
     
     /**
      * This non-abstract method eventually gets called after each batch-specific render method.
      * batch.render() calls the render method in batch, which is threadable, to process all the vertices
-     * @see GlooBatch#render(Matrix)
+     * @see GlooBatch#render()
      * Batch is a local class in this file (see below)
      * 
      * After all the vertices are processed, they are send to the GPU through buffers
      * and the batch is cleared for the next frame
      * */
     public void render(int primitiveType){
+
+//        System.out.println("rendering! " + batch.batch);
 
         // Bind the default shader
         GL20.glUseProgram(shaderProgram);
@@ -208,6 +241,7 @@ public abstract class GlooBatch {
         List<FloatBuffer> vBuffers = batch.vBuffers;
         List<ShortBuffer> iBuffers = batch.iBuffers;
         // and finally send the render requests to the GPU to be processed
+
         for(int i = 0; i < iBuffers.size(); i++){
             if(vBuffers.get(i) != null && iBuffers.get(i) != null){
                 GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vBuffers.get(i), GL15.GL_STREAM_DRAW); // send the object vertices to the GPU
@@ -222,7 +256,6 @@ public abstract class GlooBatch {
 //    /**
 //     * Adds a drawing object to a channel in the Batch by passing it on to the hidden Batch method
 //     * Takes
-//     * @param channel an integer corresponding to the channel the object will be added
 //     * @param O a DrawingObject that is a collection of vertices
 //     * (that must be the same type as the vertices of the implemented GlooBatch)
 //     * */
@@ -230,10 +263,9 @@ public abstract class GlooBatch {
         batch.add(O);
 
     }
-    public final boolean destroy(){
+    public final void destroy(){
         atlas.destroy();
-        app().getPool().destroy();
-        return this == core.ripBatch(handle);
+
     }
     public GlooApplication app(){
         return application;
@@ -271,14 +303,6 @@ public abstract class GlooBatch {
             iBuffers.add(null);
         }
 
-
-//        /**
-//         * Adds a drawing object to a particular channel in the batch
-//         * Takes
-//         * @param channel an integer corresponding to the channel the object will be added
-//         * @param O a DrawingObject that is a collection of vertices
-//         * (that must be the same type as the vertices of the implemented GlooBatch)
-//         * */
         void add(DrawingObject O){
             batch.addFirst(O);
 
@@ -302,15 +326,21 @@ public abstract class GlooBatch {
          * After making the list of tasks, they get sent to the ThreadPool (as blocking threads)
          * */
         void render(){
-            int threads = monoThreaded ? 1 : (int)Math.min((float)batch.size()/batchPool.size(), batchPool.size());
-            Runnable[] tasks = new Runnable[threads];
-            while(vBuffers.size() < threads){vBuffers.add(null);}
-            while(iBuffers.size() < threads){iBuffers.add(null);}
-            for(int i = 0; i < tasks.length; i++){
-                int index = i;
-                tasks[i] = (() -> render(index, threads));
+            int threads = (int)Math.min((float)batch.size()/batchPool.size(), batchPool.size());
+            if(threads > 1){
+                Runnable[] tasks = new Runnable[threads];
+                while(vBuffers.size() < threads){vBuffers.add(null);}
+                while(iBuffers.size() < threads){iBuffers.add(null);}
+                for(int i = 0; i < tasks.length; i++){
+                    int index = i;
+                    tasks[i] = (() -> render(index, threads));
+                }
+                batchPool.await(batchPool.task(tasks));
+            } else {
+                while(vBuffers.size() < 1){vBuffers.add(null);}
+                while(iBuffers.size() < 1){iBuffers.add(null);}
+                render(0, 1);
             }
-            batchPool.await(batchPool.task(tasks));
         }
 
         /**
