@@ -36,7 +36,7 @@ import GlooKit.Utils.Vector;
  *     where x is any number and h and w are the letters 'h' and 'w';</li>
  *     <li>a fractional amount of the parent, which is set using the "x/y" tag, where x and y are any numbers and / is a
  *     literal slash;</li>
- *     <li>a variable fractional amount of the parent, which is set using the "x/n", where x is any number, / is the
+ *     <li>a flexible amount of the parent, which is set using the "x/n", where x is any number, / is the
  *     literal slash, and n is the letter 'n'; or</li>
  *     <li>size just large enough to encapsulate any of its children, which is set using the "wrap" tag.</li>
  * </ul>
@@ -46,8 +46,8 @@ import GlooKit.Utils.Vector;
  * tags, where "xh" means the width is x times the height, "xw" means the height is x times the width, and "equal" means
  * the width or height is exactly equal to the height or width. After that, fractional width and fractional height
  * elements are calculated from the remaining space after the fixed and proportional width and height elements have been
- * allocated. Finally, variable fractional amounts are determined based on a claim system. The x in the fraction x/n is
- * the number of claims and n is the total number of claims of all children of a parent. Each variable fractional child
+ * allocated. Finally, flexible amounts are determined based on a claim system. The x in the fraction x/n is
+ * the number of claims and n is the total number of claims of all children of a parent. Each flexible size child
  * is therefore allotted (claim)/(total claims) amount of the space of the parent remaining after all fixed,
  * proportional, and fractional width and height element have been given space. Parents who are set to "wrap" their
  * children are calculated after all of their children have been calculated, meaning that their children must all be
@@ -64,7 +64,7 @@ import GlooKit.Utils.Vector;
  * </ol>
  * As fixed width happens first, the second element is granted 100 points off the bat. Immediately afterward, the third
  * element is awarded 25 points. This leaves 400 points, of which the first element receives 100. Finally, we have 300
- * points to be allocated to the two variable fractional width elements. Together they have 5+1=6 claims, giving the
+ * points to be allocated to the two flexible width elements. Together they have 5+1=6 claims, giving the
  * fourth element 5/6th of the 300 points and the last element the remaining 1/6th the 300 points. As such, each of the
  * elements will be awarded:
  * <ol>
@@ -233,7 +233,7 @@ public abstract class KitBit {
     public Float wSize;
 
     /** Float used to store available width of the containing element. This is the denominator of the relative width
-     * claimed by this element. If this is null, then this is a variable fractional width element.
+     * claimed by this element. If this is null, then this is a flexible width element.
      * @see KitBit#wSize */
     public Float wPool;
 
@@ -259,7 +259,7 @@ public abstract class KitBit {
     public Float hSize;
 
     /** Float used to store available height of the containing element. This is the denominator of the relative height
-     * claimed by this element. If this is null, then this is a variable fractional height element.
+     * claimed by this element. If this is null, then this is a flexible height element.
      * @see KitBit#hSize */
     public Float hPool;
 
@@ -701,11 +701,11 @@ public abstract class KitBit {
     }
 
     /**
-     * Calculates the fraction of the height of this {@code KitBit} that is available for variable fractional height
+     * Calculates the fraction of the height of this {@code KitBit} that is available for flexible height
      * children after fixed and fractional height children have had their space allocated.
      *
      * @param children the list of children of this parent whose heights are being calculated
-     * @return the fraction of the height available for variable fractional height children as a float
+     * @return the fraction of the height available for flexible height children as a float
      * */
     public float calculateHeightSpanSpace(List<KitBit> children){
         float claims = 0;
@@ -816,11 +816,11 @@ public abstract class KitBit {
     }
 
     /**
-     * Calculates the fraction of the width of this {@code KitBit} that is available for variable fractional width
+     * Calculates the fraction of the width of this {@code KitBit} that is available for flexible width
      * children after fixed and fractional width children have had their space allocated.
      *
      * @param children the list of children of this parent whose widths are being calculated
-     * @return the fraction of the width available for variable fractional width children as a float
+     * @return the fraction of the width available for flexible width children as a float
      * */
     public float calculateWidthSpanSpace(List<KitBit> children){
         float claims = 0;

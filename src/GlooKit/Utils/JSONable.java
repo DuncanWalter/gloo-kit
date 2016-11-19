@@ -1,7 +1,10 @@
 package GlooKit.Utils;
 
-/**
- * Created by Tridar on 13-Nov-16.
- */
-public class JSONable {
+
+public interface JSONable <T> {
+
+    JSONObject constructJSONObject();
+
+    T constructFromJSON(JSONObject jsonObject);
+
 }
