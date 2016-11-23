@@ -1,8 +1,5 @@
 package GlooKit.Utils;
 
-
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,17 +22,26 @@ public class JSONObject {
     }
 
     public JSONObject add(String key, Object value) {
+        return add(key, value, false);
+    }
+
+    private JSONObject add(String key, Object value, boolean alreadyParsed) {
+        
+        // the key is a String, so we need to go through and add an extra \\ to every escaped character if not alreadyParsed
+        if (!alreadyParsed) {
+            key = reescapeString(key);
+        }
+        
         if(value instanceof JSONObject || value instanceof JSONObject[]) {
             values.put(key, value);
         }else if (value instanceof String) {
-            // if its a String, we need to go through and add an extra \\ to every escaped character
+
             String valueAsString = (String) value;
 
-            valueAsString = nonWhiteSpaceRegex.matcher(valueAsString).replaceAll("\\\\$1");
-            valueAsString = newlineRegex.matcher(valueAsString).replaceAll("\\\\n");
-            valueAsString = tabRegex.matcher(valueAsString).replaceAll("\\\\t");
-            valueAsString = formfeedRegex.matcher(valueAsString).replaceAll("\\\\f");
-            valueAsString = carriagereturnRegex.matcher(valueAsString).replaceAll("\\\\r");
+            // if value is a String, we need to go through and add an extra \\ to every escaped character if not alreadyParsed
+            if (!alreadyParsed) {
+                valueAsString = reescapeString(valueAsString);
+            }
 
             values.put(key, valueAsString);
 
@@ -359,6 +365,7 @@ public class JSONObject {
         }
 
         // we have to add the last value manually, since it will not end in a comma
+        System.out.println("Parsing last Key Value Pair...");
         parseKeyValuePair(Arrays.copyOfRange(chars, lastDivider, (new String(chars)).lastIndexOf('}')));
 
     }
@@ -385,7 +392,7 @@ public class JSONObject {
                 System.out.println("Parsing value...");
                 value = parseValue(Arrays.copyOfRange(chars, i+1, chars.length));
                 System.out.println("Value: " + value);
-                add(key, value);
+                add(key, value, true);
                 return;
             }
         }
@@ -395,8 +402,8 @@ public class JSONObject {
         String string = new String(chars);
         string = string.trim();
 
-        if (string.charAt(0) == '"') {
-            return string.substring(1, string.lastIndexOf("\""));
+        if (string.charAt(0) == '"') { // this is a string
+            return string.substring(1, string.lastIndexOf('"'));
         } else if (string.charAt(0) == '[') {
 
             if(string.indexOf('{') > string.indexOf("\"")) {
@@ -535,6 +542,14 @@ public class JSONObject {
             e.printStackTrace();
             System.exit(500);
         }
+    }
+    
+    private String reescapeString(String string) {
+        string = nonWhiteSpaceRegex.matcher(string).replaceAll("\\\\$1");
+        string = newlineRegex.matcher(string).replaceAll("\\\\n");
+        string = tabRegex.matcher(string).replaceAll("\\\\t");
+        string = formfeedRegex.matcher(string).replaceAll("\\\\f");
+        return carriagereturnRegex.matcher(string).replaceAll("\\\\r");
     }
 
     public void setInline(boolean inline) {
