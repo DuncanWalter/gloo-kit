@@ -8,13 +8,25 @@ import java.util.regex.Pattern;
 
 public class JSONObject {
 
+    /** Regular expression that finds instances of " and \ in strings */
     private static Pattern nonWhiteSpaceRegex = Pattern.compile("([\"\\\\])");
+
+    /** Regular expression that finds instances of the newline character in strings */
     private static Pattern newlineRegex = Pattern.compile("\n");
+
+    /** Regular expression that finds instances of the tab character in strings */
     private static Pattern tabRegex = Pattern.compile("\t");
+
+    /** Regular expression that finds instances of the form feed character in strings */
     private static Pattern formfeedRegex = Pattern.compile("\f");
+
+    /** Regular expression that finds instances of the carriage return character in strings */
     private static Pattern carriagereturnRegex = Pattern.compile("\r");
 
+    /** Map of the key value pairs of this {@code JSONObject} */
     private Map<String, Object> values;
+
+    /** Boolean for whether this {@code JSONObject} should be written to file with as little whitespace as possible */
     private boolean inline = false;
 
     public JSONObject() {
@@ -575,55 +587,121 @@ public class JSONObject {
     }
 
     public String toString(int depth) {
-        String result = "{\n" + tabber(depth + 1);
+        return toString(depth, inline);
+    }
 
-        int keyNum = 0;
-        for(String key : values.keySet()) {
-            result += ("\"" + key + "\":");
+    public String toString(int depth, boolean inline) {
 
-            Object value = this.fetch(key);
-            if (value == null) {
-                result += "\"null\"";
-            } else if (value instanceof String) {
-                result += ("\"" + value + "\"");
-            } else if (value instanceof String[]) {
+        if (inline) {
 
-                String[] valueAsStringArray = (String[]) value;
+            String result = "{";
 
-                result += "\n"  + tabber(depth + 1) + "[\n"  + tabber(depth + 2);
+            int keyNum = 0;
+            for (String key : values.keySet()) {
+                result += ("\"" + key + "\":");
 
-                for (int i = 0; i < valueAsStringArray.length; i++) {
-                    result += "\"" + valueAsStringArray[i] + "\"";
+                Object value = this.fetch(key);
+                if (value == null) {
+                    result += "\"null\"";
+                } else if (value instanceof String) {
+                    result += ("\"" + value + "\"");
+                } else if (value instanceof String[]) {
 
-                    result += (i == valueAsStringArray.length-1) ? "\n" + tabber(depth + 1) + "]" : ",\n"  + tabber(depth + 2);
+                    String[] valueAsStringArray = (String[]) value;
+
+                    result += "[";
+
+                    for (int i = 0; i < valueAsStringArray.length; i++) {
+                        result += "\"" + valueAsStringArray[i] + "\"";
+
+                        result += (i == valueAsStringArray.length - 1) ? "]" : ",";
+                    }
+
+                } else if (value instanceof JSONObject) {
+                    result += ((JSONObject) value).toString(true);
+                } else if (value instanceof JSONObject[]) {
+
+                    JSONObject[] valueAsJSONObjectArray = (JSONObject[]) value;
+
+                    result += "[";
+
+                    for (int i = 0; i < valueAsJSONObjectArray.length; i++) {
+
+                        result += valueAsJSONObjectArray[i].toString(true);
+
+                        result += (i == valueAsJSONObjectArray.length - 1) ? "]" : ",";
+                    }
+                } else {
+                    result += "\"ERROR!\"";
+                    System.out.println("WARNING: Value of Key " + key + " was not a valid type!");
                 }
 
-            } else if (value instanceof JSONObject) {
-                result += ((JSONObject)value).toString(depth + 1);
-            } else if (value instanceof JSONObject[]) {
-
-                JSONObject[] valueAsJSONObjectArray = (JSONObject[]) value;
-
-                result += "\n" + tabber(depth + 1) + "[\n" + tabber(depth + 2);
-
-                for (int i = 0; i < valueAsJSONObjectArray.length; i++) {
-
-                    result += valueAsJSONObjectArray[i].toString(depth + 2);
-
-                    result += (i == valueAsJSONObjectArray.length-1) ? "\n" + tabber(depth + 1) + "]" : ",\n" + tabber(depth + 2);
-                }
-            } else {
-                result += "\"ERROR!\"";
-                System.out.println("WARNING: Value of Key " + key + " was not a valid type!");
+                result += (keyNum == values.keySet().size() - 1) ? "" : ",";
+                keyNum++;
             }
 
-            result += (keyNum == values.keySet().size() - 1) ? "\n" : ",\n" + tabber(depth + 1);
-            keyNum++;
+            result += tabber(depth) + "}";
+
+
+            return result;
+
+        } else {
+
+            String result = "{\n" + tabber(depth + 1);
+
+            int keyNum = 0;
+            for (String key : values.keySet()) {
+                result += ("\"" + key + "\":");
+
+                Object value = this.fetch(key);
+                if (value == null) {
+                    result += "\"null\"";
+                } else if (value instanceof String) {
+                    result += ("\"" + value + "\"");
+                } else if (value instanceof String[]) {
+
+                    String[] valueAsStringArray = (String[]) value;
+
+                    result += "\n" + tabber(depth + 1) + "[\n" + tabber(depth + 2);
+
+                    for (int i = 0; i < valueAsStringArray.length; i++) {
+                        result += "\"" + valueAsStringArray[i] + "\"";
+
+                        result += (i == valueAsStringArray.length - 1) ? "\n" + tabber(depth + 1) + "]" : ",\n" + tabber(depth + 2);
+                    }
+
+                } else if (value instanceof JSONObject) {
+                    result += ((JSONObject) value).toString(depth + 1, true);
+                } else if (value instanceof JSONObject[]) {
+
+                    JSONObject[] valueAsJSONObjectArray = (JSONObject[]) value;
+
+                    result += "\n" + tabber(depth + 1) + "[\n" + tabber(depth + 2);
+
+                    for (int i = 0; i < valueAsJSONObjectArray.length; i++) {
+
+                        result += valueAsJSONObjectArray[i].toString(depth + 2, true);
+
+                        result += (i == valueAsJSONObjectArray.length - 1) ? "\n" + tabber(depth + 1) + "]" : ",\n" + tabber(depth + 2);
+                    }
+                } else {
+                    result += "\"ERROR!\"";
+                    System.out.println("WARNING: Value of Key " + key + " was not a valid type!");
+                }
+
+                result += (keyNum == values.keySet().size() - 1) ? "\n" : ",\n" + tabber(depth + 1);
+                keyNum++;
+            }
+
+            result += tabber(depth) + "}";
+
+
+            return result;
         }
+    }
 
-        result += tabber(depth) + "}";
-
-        return result;
+    public String toString(boolean inline) {
+        return toString(0, inline);
     }
 
     public void writeToFile(String filepath) {
@@ -632,7 +710,11 @@ public class JSONObject {
 
             FileOutputStream outputStream = new FileOutputStream(filepath);
 
-            outputStream.write(this.toString().getBytes());
+            if (inline) {
+                outputStream.write(this.toString(true).getBytes());
+            } else {
+                outputStream.write(this.toString(false).getBytes());
+            }
 
             outputStream.close();
 

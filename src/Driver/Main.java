@@ -50,6 +50,9 @@ public class Main{
 //        System.out.println();
 
         json.writeToFile("jsontest.json");
+
+        json.setInline(true);
+        json.writeToFile("jsoninline.json");
         
         JSONObject incoming = new JSONObject();
         incoming.readFromFile("jsontest.json");
@@ -68,6 +71,15 @@ public class Main{
 
         System.out.println();
         System.out.println();
+
+        JSONObject inlineIncoming = new JSONObject();
+        inlineIncoming.readFromFile("jsoninline.json");
+        inlineIncoming.writeToFile("jsoninlinewrite.json");
+
+        System.out.println(incoming.fetchString(new String[]{"eviler string"}));
+        System.out.println();
+        System.out.println();
+        System.out.println(incoming.fetchString(new String[]{"Ragnarock"}));
 
 
 //        try{
