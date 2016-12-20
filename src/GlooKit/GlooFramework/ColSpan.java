@@ -1,7 +1,6 @@
 package GlooKit.GlooFramework;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ColSpan extends KitBit{
@@ -24,7 +23,8 @@ public class ColSpan extends KitBit{
 
     }
     public void drawFrame(float X, float Y, float W, float H, float Z){
-        // TODO hidden checks, clipping off-screen draws, fix n finding
+
+        super.drawFrame(X, Y, W, H, Z);
 
         float spanPoints = calculateHeightSpanPoints(getChildren());
         float spanSpace = calculateHeightSpanSpace(getChildren());
@@ -49,7 +49,5 @@ public class ColSpan extends KitBit{
 
             }
         }
-
-        super.drawFrame(X, Y, W, H, Z);
     }
 }

@@ -158,11 +158,18 @@ public class Worker {
         }
     }
 
+    /**
+     * Returns the number of {@code Worker}s available in this thread pool.
+     * */
     public int size(){
         return workers.length;
 
     }
 
+    /**
+     * Safely ends all {@code Worker}s in this thread pool. All their remaining tasks will be abandoned, though present tasks
+     * will be completed. All {@code Worker}s must be terminated in order for an application to truly exit.
+     * */
     public void destroy(){
         for(Worker w : workers){
             w.halt = true;

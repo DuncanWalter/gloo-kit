@@ -9,16 +9,26 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class DrawingObject {
-
+    /** The {@code GlooBatch} used to modle and render this {@code DrawingObject}*/
     private final GlooBatch batch;
+    /** The list of {@code Vertex}es contained within this {@code DrawingObject} for rendering*/
     private final List<Vertex> vertices;
+    /** The list of indices contained within this {@code DrawingObject} for rendering vertices*/
     private final List<Short> indices;
 
+    /**
+     * Constructs a {@code DrawingObject} with no defined vertices or indices.
+     * @param context The {@code GlooBatch} used to modle and render this {@code DrawingObject}
+     */
     public DrawingObject(GlooBatch context){
         this.batch = context;
         vertices = new ArrayList<>();
         indices = new ArrayList<>();
     }
+    /**
+     * Passes each {@code Vertex} of this {@code DrawingObject} to a given {@code Consumer<Vertex>}.
+     * @param function The {@code Consumer<Vertex>} used.
+     * */
     public void apply(Consumer<Vertex> function){
         for(Vertex v : vertices){
             // TODO SUPER UNSAFE! IF THIS EVER BREAKS, ADD AN IF CHECK- THIS IS HERE TO TEST PROVABILITY
@@ -41,14 +51,23 @@ public abstract class DrawingObject {
         return indices;
 
     }
+    /**
+     * Adds a new {@code Vertex} to this {@code DrawingObject} created by this {@code DrawingObject}'s {@code GlooBatch}.
+     * */
     public Vertex newVertex(){
         return batch.createVertex();
 
     }
+    /**
+     * Adds this {@code DrawingObject} to its {@code GlooBatch} for rendering. Does not send any data to the GPU.
+     * */
     public void draw(){
         batch.add(this);
 
     }
+    /**
+     * Instructs this {@code DrawingObject}'s {@code GlooBatch} to render all added {@code DrawingObjects}.
+     * */
     public void send(){
         batch.render();
 

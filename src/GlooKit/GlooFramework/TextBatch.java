@@ -48,7 +48,7 @@ public class TextBatch extends GlooBatch {
 //        GL11.glEnable(GL_MULTISAMPLE);
 //        // enable depth testing
         // enable depth testing
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
         // tell the shader to enable blending
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

@@ -1,7 +1,5 @@
 package GlooKit.GlooFramework;
 
-import GlooKit.GlooAPI.GlooBatch;
-import GlooKit.GlooAPI.GlooCore;
 import GlooKit.GlooAPI.Worker;
 import GlooKit.Utils.Matrix;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -63,9 +61,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  *     simply be spent waiting, which will ensure a maximum number of frames per second. (No such guarantee is given for
  *     the minimum number of frames per second.
  * <p>
- * Rendering happens primarily through the {@link GlooCore GlooCore}, which handles everything from
- * {@link GlooKit.GlooAPI.Texture Textures} to {@link GlooKit.GlooAPI.GlooFontFamily FontFamilies} through
- * {@link GlooBatch GlooBatches}. Multiple {@code GlooApplications} can be run at the same time by employing the
+ * Multiple {@code GlooApplications} can be run at the same time by employing the
  * {@link GlooApplication#runConcurrent(String, Consumer) runConcurrent(String, Consumer)} method. See
  * {@link Driver.Main Driver.Main} for an example implementation of running {@code GlooApplications}.
  *
@@ -359,6 +355,7 @@ public class GlooApplication extends KitBit {
      * */
     public GlooApplication getApp(){
         return this;
+
     }
 
     /**
@@ -387,6 +384,7 @@ public class GlooApplication extends KitBit {
      * */
     public Worker getPool(){
         return pool;
+
     }
 
     /**
@@ -396,6 +394,7 @@ public class GlooApplication extends KitBit {
      * */
     public float getSpacing(){
         return spacing;
+
     }
 
     /**
@@ -540,6 +539,7 @@ public class GlooApplication extends KitBit {
      * */
     public void stepFrame(double delta){
         room.stepFrame(delta);
+
     }
 
 }

@@ -135,7 +135,6 @@ public abstract class GlooBatch {
         }
         vertexSize = offset;
 
-
         // unbind the VBO
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         // deselect the VAO
@@ -144,45 +143,6 @@ public abstract class GlooBatch {
         indicesVBOID = GL15.glGenBuffers();
 
     }
-//    public void describeVertices(int[] parameterLengths, String... parameterNames){
-//
-//        if(parameterNames.length != parameterLengths.length){
-//            new Exception("ERROR: parameterLengths and parameterNames were of different sizes").printStackTrace();
-//        } else {
-//            parameterCount = parameterNames.length;
-//        }
-//
-//        VAOID = GL30.glGenVertexArrays();
-//        GL30.glBindVertexArray(VAOID);
-//        // Create and bind the default VAO's VBO
-//        VBOID = GL15.glGenBuffers();
-//        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBOID);
-//
-//        int length = 0;
-//        for(int l : parameterLengths){
-//            length += l;
-//        }
-//        int index = 0;
-//        int offset = 0;
-//        for(String s : parameterNames){
-////            Setup the VBO with the corresponding attribute pointers
-////            attribute list #, pointSize of element, type of element, isNormalized?, stride (skipping stuff), run spot
-//            GL20.glBindAttribLocation(shaderProgram, index, s);
-//            GL20.glVertexAttribPointer(index, parameterLengths[index], GL11.GL_FLOAT, false, length * 4, offset * 4);
-//            offset += parameterLengths[index];
-//            index++;
-//        }
-//        vertexSize = offset;
-//
-//
-//        // unbind the VBO
-//        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-//        // deselect the VAO
-//        GL30.glBindVertexArray(0);
-//        // Create and bind a VBO for the indices (this isn't attached to the VAO (for some reason))
-//        indicesVBOID = GL15.glGenBuffers();
-//
-//    }
     public int describeUniform(String uniform){
         return GL20.glGetUniformLocation(shaderProgram, uniform);
 

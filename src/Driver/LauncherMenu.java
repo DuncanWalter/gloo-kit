@@ -18,11 +18,11 @@ public class LauncherMenu {
 
         TextBatch textBatch;
         textBatch = new TextBatch(app);
-        textBatch.addFont("assets/fonts", STANDARD_TEXT_SET, 72);
+        textBatch.addFont("assets/fonts", STANDARD_TEXT_SET, 24);
         textBatch.getFontFamilies().forEach(System.out::println);
         textBatch.bindTextures();
 
-        Texture blue       = defaultBatch.getTexture("Blue");
+        Texture blue       = defaultBatch.getTexture("ColorSheet");
         Texture fullscreen = defaultBatch.getTexture("fullscreen");
         Texture windowed   = defaultBatch.getTexture("windowed");
         Texture fontAtlas  = textBatch.getTexture("atlas");
@@ -43,7 +43,7 @@ public class LauncherMenu {
         };
 
         new Room(app
-//                , new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(textBatch, fontAtlas))
+                , new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(textBatch, fontAtlas))
                 , new RowSpan(
                     new ColSpan(
                          new Canvas(LEFT, CENTER, "1/n", "0.5w", new Rect(defaultBatch, blue))

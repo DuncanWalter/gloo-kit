@@ -19,7 +19,7 @@ public class MainMenu {
         batch.addTexture("Assets");
         batch.bindTextures();
 
-        Texture blue          = batch.getTexture("Blue");
+        Texture blue          = batch.getTexture("ColorSheet");
         Texture physicsButton = batch.getTexture("Physics-Button");
 
 
@@ -102,6 +102,7 @@ public class MainMenu {
                 }
 
                 poly.draw();
+                poly.send();
 
             }
 

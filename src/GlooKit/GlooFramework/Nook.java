@@ -57,9 +57,8 @@ public class Nook extends KitBit {
      *          Nook
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
-        drawChildren(z);
         super.drawFrame(X, Y, W, H, z);
-
+        drawChildren(z);
     }
 
     /**
@@ -71,6 +70,7 @@ public class Nook extends KitBit {
      * */
     public void setParent(KitBit parent) {
         parent.addChild(this); // overrides the normal method to not notify this Nook of the parent
+
     }
 
     /**
@@ -81,6 +81,7 @@ public class Nook extends KitBit {
      * */
     public void setZ(float Z) {
         this.z = Z;
+
     }
 
 }

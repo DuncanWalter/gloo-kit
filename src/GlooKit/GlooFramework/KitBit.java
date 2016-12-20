@@ -969,8 +969,7 @@ public abstract class KitBit {
      * @see GlooKit.GlooFramework.KitBit#drawFrame(float, float, float, float, float)
      * */
     public void drawChildren(float Z){
-        for(int i = children.size(); i > 0;){
-            i--;
+        for(int i = 0; i < children.size(); i++){
             if (children.get(i) != null) {
                 if (!children.get(i).isHidden()) {
                     KitBit child = children.get(i);
@@ -1012,9 +1011,8 @@ public abstract class KitBit {
         wStore = W;
         hStore = H;
 
-        if(label != null){label.draw(X, Y, W, H, Z);}
         if(frame != null){frame.draw(X, Y, W, H, Z);} // pass on the draw call to the frame and label, if any exist
-
+        if(label != null){label.draw(X, Y, W, H, Z);}
 
     }
 

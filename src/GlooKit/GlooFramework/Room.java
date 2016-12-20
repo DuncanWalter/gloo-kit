@@ -34,6 +34,7 @@ public class Room extends Nook {
      * */
     public void configure(){
         configure(getApp().getSpacing(), getApp().pointSize);
+
     }
 
 }
