@@ -157,7 +157,6 @@ public abstract class GlooBatch {
         }
     }
 
-
     /** 
      * This abstract render call must be implemented by each batch that a user constructs
      * @see GlooKit.GlooFramework.DefaultBatch#render()

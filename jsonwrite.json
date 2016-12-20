@@ -1,0 +1,48 @@
+{
+	"\"true evil\"":"\"Do you hate me?\n How 'bout now?\"",
+	"name":"Fred",
+	"bottle":{
+		"message":"\"Duncan\" said so,\n JSON format!\"",
+		"type":"wet"
+	},
+	"desert":
+	[
+		"cheesecake",
+		"(gummi-)bears",
+		"I fu[]{}ing h*te y,u"
+	],
+	"evil string":"''",
+	"age":"13",
+	"friends":
+	[
+		{
+			"name":"Bob",
+			"job":"engineer"
+		},
+		{
+			"skills":
+			[
+				"SCIENCE!"
+			],
+			"name":"Bill",
+			"job":"scientist"
+		},
+		{
+			"name":"Jebediah",
+			"job":"pilot",
+			"friends":
+			[
+				{
+					"goal":"ManMode",
+					"name":"Mark"
+				},
+				{
+					"name":"Stan",
+					"status":"deceased"
+				}
+			]
+		}
+	],
+	"height":"169",
+	"eviler string":"\"Quotes motherf*cker\""
+}

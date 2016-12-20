@@ -60,8 +60,7 @@ public class LauncherMenu {
                         ,new Canvas(LEFT, CENTER, "1/n", "1/n", new Rect(defaultBatch, blue))
                     )
                 )
-                , new Modal(CENTER, CENTER, "250p", "250p", app
-                    , fullscreenToggleButton)
+                , new Modal(CENTER, CENTER, "250p", "250p", app, fullscreenToggleButton)
                 , new Button(CENTER, BOTTOM, "200p", "wraps", new Rect(defaultBatch, 0.1f, 0.2f, 0.4f, 1.0f), new Label(textBatch, "Alte Haas Grotesk", "PLAY"), runGame)
         ).configure();
 

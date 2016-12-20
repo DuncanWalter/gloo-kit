@@ -1,5 +1,7 @@
 package GlooKit.GlooFramework;
 
+import GlooKit.Utils.JSONObject;
+import GlooKit.Utils.JSONable;
 import GlooKit.Utils.Vector;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -10,11 +12,11 @@ import java.io.*;
  *
  * Allows for the configuration of fullscreen mode, window pointSize, and frames per second
  *
- * Author: Duncan Walter
- * Documenter: Eli Jergensen
+ * @author Duncan Walter
+ * @author Eli Jergensen
+ * @since 1.0
  * */
-// TODO add spacing
-public class GlooApplicationConfiguration implements Serializable{
+public class GlooApplicationConfiguration implements Serializable, JSONable<GlooApplicationConfiguration> {
 
     // toggles fullscreen / windowed mode
     private boolean fullscreen;
@@ -42,6 +44,9 @@ public class GlooApplicationConfiguration implements Serializable{
     public GlooApplicationConfiguration(String fileName){
 
         this.fileName = fileName;
+
+        JSONObject json = constructJSONObject();
+        json.writeToFile(fileName.substring(0, fileName.lastIndexOf('.')) + ".json");
 
         try {
             // try to load the config file
@@ -78,6 +83,42 @@ public class GlooApplicationConfiguration implements Serializable{
 
         }
 
+    }
+
+    public GlooApplicationConfiguration(String fileName, boolean REMOVELATER) {
+
+        this.fileName = fileName;
+
+        try {
+
+            // attempt to load in the existing file
+
+            FileInputStream inputFile = new FileInputStream(fileName); // construct a file input stream
+
+        } catch (IOException e) {
+
+        }
+    }
+
+    public JSONObject constructJSONObject() {
+        JSONObject json = new JSONObject();
+
+        json.add("name", "Fred");
+        json.add("age", "13");
+        json.add("height", 169);
+        json.add("desert", new String[] {"cheesecake", "(gummi-)bears", "I fu[]{}ing h*te y,u"});
+        json.add("bottle", new JSONObject().add("message", "\"Duncan said so, JSON format!\""));
+//        json.add("friends", new JSONObject[] {
+//            new JSONObject().add("name", "Bob"),
+//            new JSONObject().add("name", "Bill"),
+//            new JSONObject().add("name", "Jebediah")
+//        });
+
+        return json;
+    }
+
+    public GlooApplicationConfiguration constructFromJSON(JSONObject json) {
+        return this;
     }
 
     /**

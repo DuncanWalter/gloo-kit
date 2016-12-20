@@ -23,8 +23,8 @@ public class Modal extends Nook{
      * @param Y int of the vertical justification, as defined in the KitBit class
      * @param W a valid formatting String for setting the width, as defined in the KitBit class
      * @param H a valid formatting String for setting the height, as defined in the KitBit class
-     * @param app the GlooApplication of this Nook, which allows Nook to capture input
-     * @param children possibly many KitBits, which are children of this Nook. Can take any number of KitBits (null for
+     * @param app the GlooApplication of this Modal, which allows Modal to capture input
+     * @param children possibly many KitBits, which are children of this Modal. Can take any number of KitBits (null for
      *                 none)
      *
      * @see Nook#Nook(int, int, String, String, GlooApplication, KitBit...)
@@ -36,10 +36,6 @@ public class Modal extends Nook{
     /** Overrides the default {@link KitBit#checkFocus(Input) checkFocus(Input)} method of {@code KitBit} to close this
      * {@code Modal} if a click occurs when this {@code Modal} is active and the click happens somewhere other than the
      * Modal.
-     *
-     * @param input an Input, which handles user input from keyboards, mice and controllers and is typically passed down
-     *              by the parent of this KitBit
-     * @return true if this KitBit is in focus
      * */
     public boolean checkFocus(Input input) {
         if(!isUnder(input.getCursorLocation())){

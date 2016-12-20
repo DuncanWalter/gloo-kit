@@ -1,0 +1,14 @@
+{
+	"name":"Fred",
+	"bottle":{
+		"message":"\"Duncan said so, JSON format!\""
+	},
+	"desert":
+	[
+		"cheesecake",
+		"(gummi-)bears",
+		"I fu[]{}ing h*te y,u"
+	],
+	"age":"13",
+	"height":"169"
+}

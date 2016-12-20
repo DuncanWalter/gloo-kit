@@ -534,8 +534,6 @@ public class GlooApplication extends KitBit {
      * on only the {@code Room} of the {@code GlooApplication}, instead of all children. Since all {@code KitBits} are
      * descendants of the {@code Room} in one way or another and the {@code stepFrame(double)} method of {@code KitBit}
      * is recursive, {@code stepFrame} will eventually be called on all {@code KitBits}.
-     *
-     * @param delta double for the number of seconds that have elapsed since the last stepFrame
      * */
     public void stepFrame(double delta){
         room.stepFrame(delta);

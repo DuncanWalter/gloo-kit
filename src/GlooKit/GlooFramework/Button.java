@@ -115,10 +115,6 @@ public class Button extends KitBit {
      * first frame that the mouse was pressed down. Triggers the {@code onClick()} action when the mouse has been
      * pressed and released over this {@code Button} without moving off of it. This method can be overridden to change
      * this behavior if desired.
-     *
-     * @param delta double for the number of seconds between the previous frame and the current frame
-     * @param input an Input, which handles user input from keyboards, mice and controllers and is typically passed down
-     *              by the parent of this KitBit
      * */
     public void calcFrame(double delta, Input input){
 
