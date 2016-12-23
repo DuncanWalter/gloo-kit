@@ -31,7 +31,7 @@ public class LauncherMenu {
         Texture fontAtlas  = textBatch.getTexture("atlas");
 
         GlooApplicationConfiguration config;
-        config = new GlooApplicationConfiguration("Game.cfg");
+        config = new GlooApplicationConfiguration("Game.json");
 
         Button fullscreenToggleButton = new Button(CENTER, CENTER, "1/n+", "1/n+", new Rect(config.isFullscreen() ? windowed : fullscreen, DEFAULT), null, null);
         fullscreenToggleButton.setAction(()->{

@@ -5,7 +5,7 @@ package GlooKit.Utils;
  * which can be read from or written to file.
  *
  * @see JSONObject
- * 
+ *
  * @author Eli Jergensen
  * @author Duncan Walter
  * @since 1.0

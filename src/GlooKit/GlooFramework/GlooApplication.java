@@ -92,11 +92,15 @@ public class GlooApplication extends KitBit {
     /** Number of nanoseconds in a frame */
     private final long FRAME_LENGTH;
 
+    public final float dpi;
+
     /** Size of a point (1/72 of an inch), measured in pixels */
     public final float pointSize;
 
     /** Width of the default spacing in an application, measured in pixels */
     private final float spacing;
+
+    private GlooApplicationConfiguration config;
 
 
     // for tracking and logging fps information
@@ -150,7 +154,7 @@ public class GlooApplication extends KitBit {
         this.name = name;
 
         // loads in any existing configuration (or creates one from default)
-        GlooApplicationConfiguration config = new GlooApplicationConfiguration(name + ".cfg");
+        config = new GlooApplicationConfiguration(name + ".json");
 
         if(!glfwInit()){
             System.out.println("ERROR: could not instantiate glfw");
@@ -163,11 +167,26 @@ public class GlooApplication extends KitBit {
         ///////////////////////////////////////////////////////////////
 
         // load in config sizing information
-        GLFWVidMode mode = config.getDisplayMode();
-        if(mode == null){mode = display;}
-        int w = config.isFullscreen() ? mode.width() : (int)config.getSize().x();
-        int h = config.isFullscreen() ? mode.height() : (int)config.getSize().y();
-        long monitor = config.isFullscreen() ? glfwGetPrimaryMonitor() : NULL;
+
+        // grab the correct monitor
+        long monitor = glfwGetPrimaryMonitor();
+        int monitorIndex = config.getMonitorIndex();
+        if (monitorIndex < glfwGetMonitors().remaining() && monitorIndex >= 0) { // check to make sure that the monitor index is valid
+            monitor = glfwGetMonitors().get(monitorIndex); // grab the monitor from the list
+            display = glfwGetVideoMode(monitor);
+            System.out.println(display.width() + " x " + display.height());
+            for(int i = 0; i < glfwGetVideoModes(monitor).limit(); i++) {
+                System.out.println(glfwGetVideoModes(monitor).get(i).width() + " x " + glfwGetVideoModes(monitor).get(i).height());
+            }
+        } else { // otherwise display will remain the primary monitor
+            monitorIndex = 0; // restore the index to the primary monitor
+            config.setMonitorIndex(monitorIndex); // inform the config file
+            System.out.println("Reverting monitor number");
+        }
+
+        int w = config.isFullscreen() ? display.width() : (int)config.getSize().x();
+        int h = config.isFullscreen() ? display.height() : (int)config.getSize().y();
+        monitor = config.isFullscreen() ? glfwGetPrimaryMonitor() : NULL; // if the window is not fullscreen, we use NULL
         // apply versioning and window hints
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -176,8 +195,25 @@ public class GlooApplication extends KitBit {
         glfwWindowHint(GLFW_STENCIL_BITS, 4);
         glfwWindowHint(GLFW_SAMPLES, 4);
 //        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        // create the actual window (w, h, name, pass long for fullscreen, ??????)
-        window = glfwCreateWindow(w, h, name, monitor, NULL);
+        // create the actual window (w, h, name, pass long for fullscreen, window to inherit properties from!!!!)
+        window = glfwCreateWindow(w, h, name, NULL, NULL);
+
+
+
+        // determine where to put the window
+        int[] monitorLeft = new int[1]; // x - coord of left side of monitor where window is on
+        int[] monitorBottom = new int[1]; // y - coord of bottom of monitor where window is on
+        glfwGetMonitorPos(glfwGetMonitors().get(monitorIndex), monitorLeft, monitorBottom); // can't use monitor, cause monitor is NULL
+        // we want to center our window on the monitor
+        // Bottom-Left corner of screen plus half the width/height of the screen gives center of screen
+        // Subtracting half of the size of the window itself gives the bottom-left corner of the window
+
+        int windowXPos = monitorLeft[0] + display.width()/2 - w/2;
+        int windowYPos = monitorBottom[0] + display.height()/2 - h/2;
+
+        //glfwSetWindowMonitor(window, monitor, windowXPos, windowYPos, w, h, 0);
+
+
         // get the pointSize of the instantiated window (not requested values when windowed)
         this.w = new int[1];
         this.h = new int[1];
@@ -206,8 +242,36 @@ public class GlooApplication extends KitBit {
         children = new ArrayList<>();
         room = null;
 
-        pointSize = Toolkit.getDefaultToolkit().getScreenResolution()/(float)72.272;
+        // Stuff for trying to figure out screen resolution...
+//        GraphicsEnvironment graphics = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        for (int i = 0; i < graphics.getScreenDevices().length; i++) {
+//            System.out.println(graphics.getScreenDevices()[i].getDisplayMode().getHeight());
+//            System.out.println(graphics.getScreenDevices()[i].getDisplayMode().getWidth());
+//            System.out.println();
+//        }
+//
+//        System.out.println(Toolkit.getDefaultToolkit().getScreenResolution());
+
+        int[] widthInMM = new int[1];
+        int[] heightInMM = new int[1]; // not used, but needed for getting the monitor size
+        glfwGetMonitorPhysicalSize(glfwGetMonitors().get(monitorIndex), widthInMM, heightInMM);
+
+        for(int i = 0; i < widthInMM.length; i++) {
+            System.out.println(widthInMM[i] + " x " + heightInMM[i]);
+            System.out.println(display.width() + " x " + display.height());
+        }
+
+        dpi = (float) (display.width() / (widthInMM[0] / 25.4));
+        System.out.println(Toolkit.getDefaultToolkit().getScreenResolution());
+        System.out.println(dpi);
+        pointSize = dpi/72.272f;
         spacing = config.getSpacingPoints() * pointSize;
+
+
+        // TODO setup monitor closing callbacks!
+        // glfwSetMonitorCallback()
+
+        config.save(); // save the config file, just to be safe
 
     }
 
@@ -510,6 +574,8 @@ public class GlooApplication extends KitBit {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            // save out the config file
+            config.save();
             // Free the window callbacks and destroy the window
             glfwFreeCallbacks(window);
             glfwDestroyWindow(window);

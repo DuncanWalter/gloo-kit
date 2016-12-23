@@ -5,6 +5,7 @@ import GlooKit.Utils.JSONable;
 import GlooKit.Utils.Vector;
 import org.lwjgl.glfw.GLFWVidMode;
 
+import java.awt.*;
 import java.io.*;
 
 /**
@@ -21,9 +22,6 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
     // toggles fullscreen / windowed mode
     private boolean fullscreen;
 
-    // null for auto detection / default
-    // only used for fullscreen mode
-    private GLFWVidMode displayMode;
 
     private Vector size;
 
@@ -35,6 +33,8 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
 
     private String fileName;
 
+    private int monitorIndex;
+
 
     /**
      * Attempts to load a config file. If the file is not found, it makes a new default one
@@ -45,79 +45,99 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
 
         this.fileName = fileName;
 
-        JSONObject json = constructJSONObject();
-        json.writeToFile(fileName.substring(0, fileName.lastIndexOf('.')) + ".json");
+        // load in the json file
+        JSONObject json = new JSONObject();
+        json.readFromFile(fileName);
 
-        try {
-            // try to load the config file
+        constructFromJSON(json);
 
-            FileInputStream fileIn = new FileInputStream(fileName);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            GlooApplicationConfiguration config  = (GlooApplicationConfiguration)in.readObject();
-            in.close();
-            fileIn.close();
+//        try {
+//            // try to load the config file
+//
+//
+//
+//            FileInputStream fileIn = new FileInputStream(fileName);
+//            ObjectInputStream in = new ObjectInputStream(fileIn);
+//            GlooApplicationConfiguration config  = (GlooApplicationConfiguration)in.readObject();
+//            in.close();
+//            fileIn.close();
+//
+////            System.out.println(config);
+//
+//            fullscreen = config.fullscreen;
+//            displayMode = config.displayMode;
+//            size = config.size;
+//            framesPerSecond = config.framesPerSecond;
+//            this.spacingPoints = config.spacingPoints;
+//
+//        }catch(IOException e) {
+//            // if unable to load the config file (it probably doesn't exist), make a new default one
+//
+////            System.out.println(fileName + " not found; Creating a default config file");
+//
+//            fullscreen = false;
+//            displayMode = null;
+//            framesPerSecond = 60;
+//            size = new Vector(960, 520, 0);
+//            spacingPoints = 5f;
+//            save();
+//
+//        }catch(ClassNotFoundException e) {
+//
+//            e.printStackTrace();
+//
+//        }
 
-//            System.out.println(config);
-
-            fullscreen = config.fullscreen;
-            displayMode = config.displayMode;
-            size = config.size;
-            framesPerSecond = config.framesPerSecond;
-            this.spacingPoints = config.spacingPoints;
-
-        }catch(IOException e) {
-            // if unable to load the config file (it probably doesn't exist), make a new default one
-
-//            System.out.println(fileName + " not found; Creating a default config file");
-
-            fullscreen = false;
-            displayMode = null;
-            framesPerSecond = 60;
-            size = new Vector(960, 520, 0);
-            spacingPoints = 5f;
-            save();
-
-        }catch(ClassNotFoundException e) {
-
-            e.printStackTrace();
-
-        }
-
-    }
-
-    public GlooApplicationConfiguration(String fileName, boolean REMOVELATER) {
-
-        this.fileName = fileName;
-
-        try {
-
-            // attempt to load in the existing file
-
-            FileInputStream inputFile = new FileInputStream(fileName); // construct a file input stream
-
-        } catch (IOException e) {
-
-        }
     }
 
     public JSONObject constructJSONObject() {
         JSONObject json = new JSONObject();
 
-        json.add("name", "Fred");
-        json.add("age", "13");
-        json.add("height", 169);
-        json.add("desert", new String[] {"cheesecake", "(gummi-)bears", "I fu[]{}ing h*te y,u"});
-        json.add("bottle", new JSONObject().add("message", "\"Duncan said so, JSON format!\""));
-//        json.add("friends", new JSONObject[] {
-//            new JSONObject().add("name", "Bob"),
-//            new JSONObject().add("name", "Bill"),
-//            new JSONObject().add("name", "Jebediah")
-//        });
+        json.add("fullscreen", fullscreen);  // boolean gets converted to string
+        json.add("max fps", framesPerSecond); // number gets converted to string
+        // We want to store the size as an array of strings
+        String[] sizeAsStrings = new String[] {Float.toString(size.x()), Float.toString(size.y()), Float.toString(size.z())};
+        json.add("size", sizeAsStrings);
+        json.add("spacing points", spacingPoints); // number gets converted to string
+        json.add("monitor number", monitorIndex); // number gets converted to string
 
         return json;
     }
 
     public GlooApplicationConfiguration constructFromJSON(JSONObject json) {
+
+        fullscreen = json.fetchBoolean(false, "fullscreen"); // default to not fullscreen
+        framesPerSecond = json.fetchInt(60, "max fps"); // default to 60fps
+        spacingPoints = (float) json.fetchDouble(5.0, "spacing points"); // default to a spacing of 5f
+        Double[] sizeAsDoubles = json.fetchDoubles("size");
+        if (sizeAsDoubles == new Double[]{}) {
+            size = new Vector(960, 520, 0); // default to 960 by 520
+        } else {
+
+            float x, y, z;
+
+            if (sizeAsDoubles[0] == null) { // carefully copy over each field
+                x = 960;
+            } else {
+                x = (float) (double) sizeAsDoubles[0];
+            }
+
+            if (sizeAsDoubles[1] == null) { // carefully copy over each field
+                y = 520;
+            } else {
+                y = (float) (double) sizeAsDoubles[1];
+            }
+
+            if (sizeAsDoubles[2] == null) { // carefully copy over each field
+                z = 0;
+            } else {
+                z = (float) (double) sizeAsDoubles[2];
+            }
+
+            size = new Vector(x, y, z);
+        }
+        monitorIndex = json.fetchInt(0, "monitor number");
+
         return this;
     }
 
@@ -127,17 +147,24 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
      * @return false if it failed to save, true if it saved
      * */
     public boolean save(){
-        try {
-            FileOutputStream fileOut = new FileOutputStream(fileName);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(this);
-            out.close();
-            fileOut.close();
-            return true;
-        }catch(IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+
+        System.out.println("Saving " + fileName);
+
+        JSONObject json = constructJSONObject();
+        return json.writeToFile(fileName); // returns true only if it succeeds
+//        try {
+//
+//
+//            FileOutputStream fileOut = new FileOutputStream(fileName);
+//            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+//            out.writeObject(this);
+//            out.close();
+//            fileOut.close();
+//            return true;
+//        }catch(IOException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
     }
     public boolean isFullscreen(){
         return fullscreen;
@@ -145,14 +172,6 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
     }
     public void setFullscreen(boolean fullscreen){
         this.fullscreen = fullscreen;
-
-    }
-    public GLFWVidMode getDisplayMode(){
-        return displayMode;
-
-    }
-    public void setDisplayMode(GLFWVidMode displayMode){
-        this.displayMode = displayMode;
 
     }
     public int getFramesPerSecond(){
@@ -180,4 +199,10 @@ public class GlooApplicationConfiguration implements Serializable, JSONable<Gloo
 
     }
 
+    public void setMonitorIndex(int monitorIndex) {
+        this.monitorIndex = monitorIndex;
+    }
+    public int getMonitorIndex() {
+        return monitorIndex;
+    }
 }

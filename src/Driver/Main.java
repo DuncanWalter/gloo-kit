@@ -82,18 +82,18 @@ public class Main{
 //        System.out.println(incoming.fetchString(new String[]{"Ragnarock"}));
 
 
-//        try{
-//
-//            GlooApplication Launcher = new GlooApplication("Launcher");
-//            LauncherMenu.open(Launcher);
-//            Launcher.run();
-//
-//        } catch(Exception e){
-//
-//            e.printStackTrace();
-//            System.exit(-350);
-//
-//        }
+        try{
+
+            GlooApplication Launcher = new GlooApplication("Launcher");
+            LauncherMenu.open(Launcher);
+            Launcher.run();
+
+        } catch(Exception e){
+
+            e.printStackTrace();
+            System.exit(-350);
+
+        }
 
     }
 

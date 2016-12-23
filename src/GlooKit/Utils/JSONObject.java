@@ -122,6 +122,8 @@ public class JSONObject {
 
             values.put(key, valueAsStrings); // add the key-value pair
 
+        } else if (value == null) {
+            values.put(key, null); // nulls get passed along
         } else {
             // if the value is not a String, String[], JSONObject, or JSONObject[], attempt to parse it as a string
             // It's probably a number, which we want to be a string
@@ -943,12 +945,13 @@ public class JSONObject {
      * Writes a copy of this {@code JSONObject} to the {@code .json} filepath given.
      *
      * @param filepath String for the filepath of the .json file to be saved to
+     * @return boolean for whether this {@code JSONObject} was successfully written to file
      * */
-    public void writeToFile(String filepath) {
+    public boolean writeToFile(String filepath) {
 
         // warn if the filepath does not end in .json
         if (!filepath.endsWith(".json")) {
-            System.out.println("WARNING: File is not a .json file. Writing may not work!");
+            System.out.println("WARNING: File " + filepath + " is not a .json file. Writing may not work!");
         }
 
         try {
@@ -959,9 +962,12 @@ public class JSONObject {
 
             outputStream.close(); // close once we are done
 
+            return true;
+
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(500); // Something went wrong that wasn't our fault
+            return false;
+//            System.exit(500); // Something went wrong that wasn't our fault
         }
 
     }
