@@ -90,6 +90,12 @@ public class GlooApplicationWindow {
         glfwWindowHint(GLFW_SAMPLES, 4);
 //        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
+        glfwWindowHint(GLFW_RED_BITS, videoMode.redBits()); // ensure that the current video mode sticks around
+        glfwWindowHint(GLFW_GREEN_BITS, videoMode.greenBits());
+        glfwWindowHint(GLFW_BLUE_BITS, videoMode.blueBits());
+        glfwWindowHint(GLFW_REFRESH_RATE, videoMode.refreshRate());
+        //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+
         // create the actual window (w, h, name, pass long for fullscreen, window to inherit properties from!!!!)
         windowHandle = glfwCreateWindow(w, h, "TEMP NAME", displayMonitor, NULL);
 
@@ -111,14 +117,6 @@ public class GlooApplicationWindow {
         // Subtracting half of the size of the window itself gives the bottom-left corner of the window
         int windowXPos = monitorLeft[0] + videoMode.width()/2 - w/2;
         int windowYPos = monitorBottom[0] + videoMode.height()/2 - h/2;
-        System.out.println("MonitorX: " + monitorLeft[0]);
-        System.out.println("MonitorY: " + monitorBottom[0]);
-        System.out.println("WindowX: " + windowXPos);
-        System.out.println("WindowY: " + windowYPos);
-        System.out.println("MonitorWidth: " + videoMode.width());
-        System.out.println("MonitorHeight: " + videoMode.height());
-        System.out.println("WindowWidth: " + w);
-        System.out.println("WindowHeight: " + h);
         glfwSetWindowMonitor(windowHandle, displayMonitor, windowXPos, windowYPos, w, h, GLFW_DONT_CARE);
 //        glfwSetWindowPos(windowHandle, windowXPos, windowYPos); // actually set the position of the window
 //        glfwSetWindowSize(windowHandle, w, h); // actually set the size of the window
