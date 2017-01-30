@@ -24,7 +24,7 @@ public class Room extends Nook {
      * */
     public Room(GlooApplication app, KitBit... children){
         super(CENTER, CENTER, "1/n+", "1/n+", app, children);
-        z = -1;
+        z = 0.1f;
     }
 
     /**
@@ -34,6 +34,7 @@ public class Room extends Nook {
      * */
     public void configure(){
         configure(getApp().getSpacing(), getApp().pointSize);
+
     }
 
 }

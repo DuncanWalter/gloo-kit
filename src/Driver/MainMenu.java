@@ -1,7 +1,7 @@
 package Driver;
 
 import GlooKit.GlooAPI.DrawingObjects.Polygon;
-import GlooKit.GlooAPI.GlooBatch;
+
 import GlooKit.GlooAPI.Texture;
 import GlooKit.GlooAPI.Vertex;
 import GlooKit.GlooFramework.*;
@@ -10,18 +10,16 @@ import GlooKit.GlooFramework.Components.Rect;
 
 import java.util.List;
 
-import static GlooKit.GlooAPI.GlooCore.DEFAULT;
 import static GlooKit.GlooFramework.KitBit.*;
 
 public class MainMenu {
     public static void open(GlooApplication app){
 
-        GlooBatch batch;
-        batch = app.getBatch(DEFAULT);
+        DefaultBatch batch = new DefaultBatch(app);
         batch.addTexture("Assets");
         batch.bindTextures();
 
-        Texture blue          = batch.getTexture("Blue");
+        Texture blue          = batch.getTexture("ColorSheet");
         Texture physicsButton = batch.getTexture("Physics-Button");
 
 
@@ -30,7 +28,7 @@ public class MainMenu {
 
             private double[] lengths = new double[200];
             private double[] growths = new double[200];
-            private Polygon poly = new Polygon(app, DEFAULT);
+            private Polygon poly = new Polygon(batch);
 
             Drawable init(){
 
@@ -104,18 +102,19 @@ public class MainMenu {
                 }
 
                 poly.draw();
+                poly.send();
 
             }
 
         }.init();
 
         new Room(app
-                ,new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(blue, DEFAULT), null)
+                ,new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(batch, blue), null)
                 ,new Canvas(CENTER, CENTER, "1/3", "1/3", morpher, null)
                 ,new Nook(RIGHT, TOP, "1/5", "1/5", app
-                    ,new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(blue, DEFAULT), null)
+                    ,new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(batch, blue), null)
                 )
-                ,new Button(LEFT, BOTTOM, "100p", "equal", new Rect(physicsButton, DEFAULT), null, () ->{})
+                ,new Button(LEFT, BOTTOM, "100p", "equal", new Rect(batch, physicsButton), null, () ->{})
         ).configure();
 
     }

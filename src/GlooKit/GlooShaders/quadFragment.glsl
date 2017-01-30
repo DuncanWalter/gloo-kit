@@ -15,7 +15,7 @@ void main() {
 
 
     // This discards fragments if they are basically entirely transparent
-    if (out_Color.a < 0.02) {
+    if (out_Color.a < 0.1) {
         discard;
     }
 }

@@ -1,12 +1,13 @@
 package GlooKit.GlooAPI.DrawingObjects;
 
+import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.Vertex;
 import GlooKit.GlooFramework.GlooApplication;
 
 public class Quad extends Polygon {
 
-    public Quad(GlooApplication app, int batchHandle) {
-        super(app, batchHandle);
+    public Quad(GlooBatch context) {
+        super(context);
 
         addVertex();
         addVertex();

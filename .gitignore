@@ -6,3 +6,4 @@ javadocs/
 *.xml
 *.iml
 *.cfg
+*.json

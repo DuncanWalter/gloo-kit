@@ -1,31 +1,28 @@
 package Driver;
 
-import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.Texture;
 import GlooKit.GlooFramework.*;
 import GlooKit.GlooFramework.Components.Label;
 import GlooKit.GlooFramework.Components.Rect;
 
-import static GlooKit.GlooAPI.GlooCore.DEFAULT;
-import static GlooKit.GlooAPI.GlooCore.TEXT;
 import static GlooKit.GlooAPI.GlooFontFamily.STANDARD_TEXT_SET;
 import static GlooKit.GlooFramework.KitBit.*;
 
 public class LauncherMenu {
     public static void open(GlooApplication app){
 
-        GlooBatch defaultBatch;
-        defaultBatch = app.getBatch(DEFAULT);
+        DefaultBatch defaultBatch;
+        defaultBatch = new DefaultBatch(app);
         defaultBatch.addTexture("assets");
         defaultBatch.bindTextures();
 
         TextBatch textBatch;
-        textBatch = (TextBatch) app.getBatch(TEXT);
-        textBatch.addFont("assets/fonts", STANDARD_TEXT_SET, 72);
+        textBatch = new TextBatch(app);
+        textBatch.addFont("assets/fonts", STANDARD_TEXT_SET, 24);
         textBatch.getFontFamilies().forEach(System.out::println);
         textBatch.bindTextures();
 
-        Texture blue       = defaultBatch.getTexture("Blue");
+        Texture blue       = defaultBatch.getTexture("ColorSheet");
         Texture fullscreen = defaultBatch.getTexture("fullscreen");
         Texture windowed   = defaultBatch.getTexture("windowed");
         Texture fontAtlas  = textBatch.getTexture("atlas");
@@ -33,11 +30,11 @@ public class LauncherMenu {
         GlooApplicationConfiguration config;
         config = new GlooApplicationConfiguration("Game.json");
 
-        Button fullscreenToggleButton = new Button(CENTER, CENTER, "1/n+", "1/n+", new Rect(config.isFullscreen() ? windowed : fullscreen, DEFAULT), null, null);
+        Button fullscreenToggleButton = new Button(CENTER, CENTER, "1/n+", "1/n+", new Rect(defaultBatch, config.isFullscreen() ? windowed : fullscreen), null, null);
         fullscreenToggleButton.setAction(()->{
             config.setFullscreen(!config.isFullscreen());
             config.save();
-            fullscreenToggleButton.setFrame(new Rect(config.isFullscreen() ? windowed : fullscreen, DEFAULT));
+            fullscreenToggleButton.setFrame(new Rect(defaultBatch, config.isFullscreen() ? windowed : fullscreen));
         });
 
         Runnable runGame = ()->{
@@ -46,31 +43,25 @@ public class LauncherMenu {
         };
 
         new Room(app
-//                , new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(fontAtlas, TEXT))
+                , new Canvas(CENTER, CENTER, "1/n+", "1/n+", new Rect(textBatch, fontAtlas))
                 , new RowSpan(
                     new ColSpan(
-                         new Canvas(LEFT, CENTER, "1/n", "0.5w", new Rect(blue, DEFAULT))
-                        ,new Canvas(LEFT, CENTER, "1/n", "equal", new Rect(blue, DEFAULT))
-                        ,new Canvas(LEFT, CENTER, "1/n", "equal", new Rect(blue, DEFAULT))
+                         new Canvas(LEFT, CENTER, "1/n", "0.5w", new Rect(defaultBatch, blue))
+                        ,new Canvas(LEFT, CENTER, "1/n", "equal", new Rect(defaultBatch, blue))
+                        ,new Canvas(LEFT, CENTER, "1/n", "equal", new Rect(defaultBatch, blue))
                     )
                     ,new ColSpan(
-                         new Canvas(LEFT, CENTER, "1/n", "1/2", new Rect(blue, DEFAULT))
-                        ,new Canvas(LEFT, CENTER, "1/n", "1/2", new Rect(blue, DEFAULT))
+                         new Canvas(LEFT, CENTER, "1/n", "1/2", new Rect(defaultBatch, blue))
+                        ,new Canvas(LEFT, CENTER, "1/n", "1/2", new Rect(defaultBatch, blue))
                     )
                     ,new ColSpan(
-                         new Canvas(LEFT, CENTER, "1/n", "1/n", new Rect(blue, DEFAULT))
-                        ,new Canvas(LEFT, CENTER, "equal", "70p", new Rect(blue, DEFAULT))
-                        ,new Canvas(LEFT, CENTER, "1/n", "1/n", new Rect(blue, DEFAULT))
+                         new Canvas(LEFT, CENTER, "1/n", "1/n", new Rect(defaultBatch, blue))
+                        ,new Canvas(LEFT, CENTER, "equal", "70p", new Rect(defaultBatch, blue))
+                        ,new Canvas(LEFT, CENTER, "1/n", "1/n", new Rect(defaultBatch, blue))
                     )
                 )
-                , new Modal(CENTER, CENTER, "250p", "250p", app
-                    , fullscreenToggleButton)
-                , new Button(CENTER, BOTTOM, "200p", "wraps", new Rect(app, 0.1f, 0.2f, 0.4f, 1.0f), new Label(app, "Alte Haas Grotesk", "PLAY"), runGame)
-
-                , new Div(LEFT, CENTER, "1/2", "1/2"
-                    , new Canvas(LEFT, BOTTOM, "1/4", "1/4", new Rect(blue, DEFAULT))
-                    , new Canvas(RIGHT, TOP, "1/3", "1/3", new Rect(blue, DEFAULT))
-                )
+                , new Modal(CENTER, CENTER, "250p", "250p", app, fullscreenToggleButton)
+                , new Button(CENTER, BOTTOM, "200p", "wraps", new Rect(defaultBatch, 0.1f, 0.2f, 0.4f, 1.0f), new Label(textBatch, "Alte Haas Grotesk", "PLAY"), runGame)
         ).configure();
 
     }

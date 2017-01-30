@@ -6,18 +6,27 @@ import GlooKit.GlooAPI.Vertex;
 public class DefaultVertex extends Vertex {
 
     /* Attributes */
-    public static final Integer SIZE = 8;
+    public String[]  getParameterNames(){
+        return new String[]{"in_Position", "in_Color", "in_TextureCoord"};
+
+    }
+    public int[] getParameterLengths(){
+        return new int[]{3, 4, 2};
+
+    }
+    public int size(){return 9;}
     // location
     public Integer X(){return 0;}
     public Integer Y(){return 1;}
+    public Integer Z(){return 2;}
     // color
-    public Integer R(){return 2;}
-    public Integer G(){return 3;}
-    public Integer B(){return 4;}
-    public Integer A(){return 5;}
+    public Integer R(){return 3;}
+    public Integer G(){return 4;}
+    public Integer B(){return 5;}
+    public Integer A(){return 6;}
     // texture
-    public Integer S(){return 6;}
-    public Integer T(){return 7;}
+    public Integer S(){return 7;}
+    public Integer T(){return 8;}
 
 //    public Vertex create(){
 //        return new DefaultVertex();
@@ -25,11 +34,12 @@ public class DefaultVertex extends Vertex {
 //    }
 
     public DefaultVertex() {
-        super(8);
+        super();
 
         float[] attributes = attributes();
         // default to origin
         attributes[X()] = 0;
+        attributes[Y()] = 0;
         attributes[Y()] = 0;
         // default to white (full opacity)
         attributes[R()] = 1;

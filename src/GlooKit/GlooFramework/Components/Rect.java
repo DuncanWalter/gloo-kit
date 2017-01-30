@@ -1,12 +1,10 @@
 package GlooKit.GlooFramework.Components;
 
 import GlooKit.GlooAPI.DrawingObjects.Quad;
+import GlooKit.GlooAPI.GlooBatch;
 import GlooKit.GlooAPI.Texture;
 import GlooKit.GlooAPI.Vertex;
-import GlooKit.GlooFramework.GlooApplication;
 import GlooKit.GlooFramework.Input;
-
-import static GlooKit.GlooAPI.GlooCore.DEFAULT;
 
 public class Rect implements Drawable{
 
@@ -17,23 +15,22 @@ public class Rect implements Drawable{
     private float b;
     private float a;
 
-    private Rect(GlooApplication app, int batchHandle){
-        quad = new Quad(app, batchHandle);
-        texture = app.getBatch(DEFAULT).getTexture("null");
+    private Rect(GlooBatch context){
+        quad = new Quad(context);
+        texture = context.getTexture("null");
         r = 1.0f;
         b = 1.0f;
         g = 1.0f;
         a = 1.0f;
     }
 
-    public Rect(Texture texture, int batchHandle){
-        // TODO should textures be made to know if they contain any transparency?
-        this(texture.app, batchHandle);
+    public Rect(GlooBatch context, Texture texture){
+        this(context);
         this.texture = texture;
     }
 
-    public Rect(GlooApplication app, float R, float G, float B, float A){
-        this(app, DEFAULT);
+    public Rect(GlooBatch context, float R, float G, float B, float A){
+        this(context);
         r = R;
         b = B;
         g = G;
@@ -71,6 +68,7 @@ public class Rect implements Drawable{
         v.set(v.B(), b).set(v.A(), a);
 
         quad.draw();
+        quad.send();
 
     }
 

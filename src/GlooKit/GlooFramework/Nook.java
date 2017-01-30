@@ -38,7 +38,7 @@ public class Nook extends KitBit {
     public Nook(int X, int Y, String W, String H, GlooApplication app, KitBit... children){
         super(X, Y, W, H, children);
         super.setParent(app); // calls the non-overridden method to ensure the app is the nook's parent
-        setZ(1); // initially set the z of a nook to be 1
+        setZ(-0.1f); // initially set the z of a nook to be 1
     }
 
     /**
@@ -49,7 +49,6 @@ public class Nook extends KitBit {
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
         super.drawFrame(X, Y, W, H, z);
-
         drawChildren(z);
     }
 
@@ -62,6 +61,7 @@ public class Nook extends KitBit {
      * */
     public void setParent(KitBit parent) {
         parent.addChild(this); // overrides the normal method to not notify this Nook of the parent
+
     }
 
     /**
@@ -72,6 +72,7 @@ public class Nook extends KitBit {
      * */
     public void setZ(float Z) {
         this.z = Z;
+
     }
 
 }

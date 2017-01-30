@@ -12,7 +12,6 @@ import GlooKit.Utils.Vector;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import static GlooKit.GlooAPI.GlooCore.TEXT;
 import static GlooKit.GlooAPI.GlooFontFamily.GLOOFONT_PLAIN;
 
 
@@ -54,9 +53,9 @@ public class Label implements Drawable{
     private LinkedList<Character> text;
     private ArrayList<Quad> quads;
 
-    public Label(GlooApplication app, String font, String text){
-        this.app = app;
-        this.batch = (TextBatch)app.getBatch(TEXT);
+    public Label(TextBatch context, String font, String text){
+        this.batch = context;
+        this.app = batch.app();
         this.quads = new ArrayList<>();
         this.font = batch.getFontFamily(font);
         this.text = new LinkedList<>();
@@ -87,6 +86,8 @@ public class Label implements Drawable{
             }
         }
 
+        batch.render();
+
     }
 
     public void format(float X, float Y, float W, float H, float Z){
@@ -97,7 +98,7 @@ public class Label implements Drawable{
             Vector offset = new Vector(app.getSpacing(), H - app.getSpacing() - font.getCharHeight(pointSize), 0);
             for(Character c : text){
                 if(quads.size() == i){quads.add(null);}
-                if(quads.get(i) == null){quads.set(i, new Quad(app, TEXT));}
+                if(quads.get(i) == null){quads.set(i, new Quad(batch));}
 
                 Quad quad = quads.get(i);
                 GlooCharacter character = font.getCharacter(fontStyle, c);
@@ -105,7 +106,7 @@ public class Label implements Drawable{
                            ,Y + offset.y() + character.y(pointSize)
                            ,character.w(pointSize)
                            ,character.h(pointSize)
-                           ,Z + 0.1f);
+                           ,Z);
 
                 quad.apply(0, (Vertex v) -> {v.set(v.S(), character.s()); v.set(v.T(), character.v());});
                 quad.apply(1, (Vertex v) -> {v.set(v.S(), character.s()); v.set(v.T(), character.t());});

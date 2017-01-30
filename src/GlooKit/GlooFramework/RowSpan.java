@@ -60,10 +60,12 @@ public class RowSpan extends Div{
      *
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
+
         super.drawFrame(X, Y, W, H, Z);
 
-        float spanPoints = calculateWidthSpanPoints(getChildren()); // Calculate the number of points for fixed width children
-        float spanSpace = calculateWidthSpanSpace(getChildren()); // Calculate the fraction of width available for flex width children
+        float spanPoints = calculateWidthSpanPoints(getChildren());
+        float spanSpace = calculateWidthSpanSpace(getChildren());
+
 
         float offset = 0;
 

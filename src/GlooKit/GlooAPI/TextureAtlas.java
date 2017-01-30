@@ -234,16 +234,9 @@ public class TextureAtlas {
     }
 
     /**
-     * Packs the Textures into a single ByteBuffer using a fairly efficient and very quick method.
-     * Sorts Textures by height and then width
-     * Determines a maximum width of a row in the TextureAtlas's Texture
-     * Crams as many (of the largest remaining) Textures in one row as possible before moving on to the next row
-     * Additionally, to gain an extra boost on efficiently, every time a Texture is packed into a row,
-     * we check to see if another Texture can fit directly above it on the same row, and add the largest possible
-     * We call this "dirty packing" in the code below
+     * Packs all given Textures into a single ByteBuffer using a heuristic algorithm focused on speed.
+     * Also notifies all given textures of their coordinated within this new byte buffer.
      *
-     * After packing all of the Textures, all of the Textures are informed of their location in the TextureAtlas
-     * so that they can individually determine their texture coordinates in the larger TextureAtlas Texture
      *
      * @return A ByteBuffer that is the final packed TextureAtlas (which can then be passed on to the GPU)
      * @see TextureAtlas#constructTextureFromBuffer(ByteBuffer, int, int, int)

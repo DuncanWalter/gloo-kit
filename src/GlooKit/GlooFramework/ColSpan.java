@@ -1,5 +1,9 @@
 package GlooKit.GlooFramework;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A {@code ColSpan} is a {@link Div Div} which has a list of children that will be drawn vertically from top to bottom
  * in the order added.
@@ -12,6 +16,10 @@ package GlooKit.GlooFramework;
  */
 // TODO clipping off-screen draws during drawFrame
 public class ColSpan extends Div{
+
+    // TODO make this draw top to bottom (currently backwards)
+
+    private List<KitBit> children = new ArrayList<>();
 
     /**
      * Overloads the default {@link ColSpan#ColSpan(int, int, String, String, KitBit...) ColSpan constructor} to only
@@ -58,10 +66,11 @@ public class ColSpan extends Div{
      * {@code drawFrame} on each of the children.
      * */
     public void drawFrame(float X, float Y, float W, float H, float Z){
+
         super.drawFrame(X, Y, W, H, Z);
 
-        float spanPoints = calculateHeightSpanPoints(getChildren()); // Calculate the number of points for fixed height children
-        float spanSpace = calculateHeightSpanSpace(getChildren()); // Calculate the fraction of width available for flex height children
+        float spanPoints = calculateHeightSpanPoints(getChildren());
+        float spanSpace = calculateHeightSpanSpace(getChildren());
 
         float offset = H;
 
